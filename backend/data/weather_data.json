@@ -1,0 +1,122 @@
+[
+    {
+        "city": "New York",
+        "date": "2023-01-15",
+        "temperature": 28.5,
+        "humidity": 65,
+        "precipitation": 0.2,
+        "wind_speed": 12.3
+    },
+    {
+        "city": "Los Angeles",
+        "date": "2023-01-15",
+        "temperature": 68.2,
+        "humidity": 52,
+        "precipitation": 0,
+        "wind_speed": 5.6
+    },
+    {
+        "city": "Chicago",
+        "date": "2023-01-15",
+        "temperature": 20.1,
+        "humidity": 58,
+        "precipitation": 0.1,
+        "wind_speed": 15.2
+    },
+    {
+        "city": "Miami",
+        "date": "2023-01-15",
+        "temperature": 76.5,
+        "humidity": 82,
+        "precipitation": 0.5,
+        "wind_speed": 8.7
+    },
+    {
+        "city": "Seattle",
+        "date": "2023-01-15",
+        "temperature": 45.3,
+        "humidity": 90,
+        "precipitation": 1.2,
+        "wind_speed": 7.8
+    },
+    {
+        "city": "Denver",
+        "date": "2023-01-15",
+        "temperature": 38.2,
+        "humidity": 45,
+        "precipitation": 0,
+        "wind_speed": 9.3
+    },
+    {
+        "city": "Phoenix",
+        "date": "2023-01-15",
+        "temperature": 65.7,
+        "humidity": 30,
+        "precipitation": 0,
+        "wind_speed": 4.5
+    },
+    {
+        "city": "Houston",
+        "date": "2023-01-15",
+        "temperature": 58.3,
+        "humidity": 72,
+        "precipitation": 0.3,
+        "wind_speed": 6.2
+    },
+    {
+        "city": "Boston",
+        "date": "2023-01-15",
+        "temperature": 26.8,
+        "humidity": 63,
+        "precipitation": 0.4,
+        "wind_speed": 14.1
+    },
+    {
+        "city": "San Francisco",
+        "date": "2023-01-15",
+        "temperature": 57.2,
+        "humidity": 75,
+        "precipitation": 0.8,
+        "wind_speed": 10.5
+    },
+    {
+        "city": "New York",
+        "date": "2023-02-15",
+        "temperature": 32.1,
+        "humidity": 60,
+        "precipitation": 0,
+        "wind_speed": 10.8
+    },
+    {
+        "city": "Los Angeles",
+        "date": "2023-02-15",
+        "temperature": 70.5,
+        "humidity": 48,
+        "precipitation": 0,
+        "wind_speed": 6.2
+    },
+    {
+        "city": "Chicago",
+        "date": "2023-02-15",
+        "temperature": 25.6,
+        "humidity": 55,
+        "precipitation": 0.2,
+        "wind_speed": 13.7
+    },
+    {
+        "city": "Miami",
+        "date": "2023-02-15",
+        "temperature": 78.9,
+        "humidity": 79,
+        "precipitation": 0.2,
+        "wind_speed": 7.5
+    },
+    {
+        "city": "Seattle",
+        "date": "2023-02-15",
+        "temperature": 47.8,
+        "humidity": 85,
+        "precipitation": 0.9,
+        "wind_speed": 8.2
+    }
+]
