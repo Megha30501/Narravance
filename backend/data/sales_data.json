@@ -1,0 +1,50 @@
+[
+    {
+        "company": "Honda",
+        "car_model": "Civic",
+        "date_of_sale": "2023-03-15",
+        "price": 22000
+    },
+    {
+        "company": "Toyota",
+        "car_model": "Corolla",
+        "date_of_sale": "2023-04-12",
+        "price": 21000
+    },
+    {
+        "company": "Honda",
+        "car_model": "Accord",
+        "date_of_sale": "2023-06-20",
+        "price": 25000
+    },
+    {
+        "company": "Toyota",
+        "car_model": "Highlander",
+        "date_of_sale": "2023-05-25",
+        "price": 32000
+    },
+    {
+        "company": "Honda",
+        "car_model": "CR-V",
+        "date_of_sale": "2024-02-14",
+        "price": 27000
+    },
+    {
+        "company": "Toyota",
+        "car_model": "Land Cruiser",
+        "date_of_sale": "2024-01-30",
+        "price": 55000
+    },
+    {
+        "company": "Honda",
+        "car_model": "Fit",
+        "date_of_sale": "2025-01-07",
+        "price": 16000
+    },
+    {
+        "company": "Toyota",
+        "car_model": "Matrix",
+        "date_of_sale": "2025-03-22",
+        "price": 18000
+    }
+]
