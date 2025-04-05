@@ -1,110 +1,97 @@
-import threading
 import time
+import os
 import json
+import pandas as pd
 import csv
 from datetime import datetime
-import os
+import logging
+from contextlib import contextmanager
+from queue import Queue
+from threading import Thread
+
 
 from .models import db, Task, SalesData
 
-# Simulated Job Queue
 job_queue = []
 
-def process_task(task_id, filters):
-    # Add task to job queue
-    job_queue.append((task_id, filters))
 
-    # Run in a separate thread
-    thread = threading.Thread(target=handle_task, args=(task_id, filters))
-    thread.start()
-
-def handle_task(task_id, filters):
-    # Simulated delay before starting
-    time.sleep(3)
-
-    task = Task.query.get(task_id)
-    task.status = 'in_progress'
-    task.updated_at = datetime.utcnow()
-    db.session.commit()
-
-    # Load and filter source A (JSON)
-    source_a_data = load_json_data('data/source_a.json')
-    filtered_a = [
-        record for record in source_a_data
-        if apply_filters(record, filters, 'A')
-    ]
-
-    # Load and filter source B (CSV)
-    filtered_b = load_csv_data('data/source_b.csv', filters)
-
-    # Simulate processing time
-    time.sleep(4)
-
-    # Merge and insert to DB
-    for record in filtered_a:
-        sale = SalesData(
-            task_id=task_id,
-            source='A',
-            company=record['company'],
-            car_model=record['car_model'],
-            date_of_sale=record['date_of_sale'],
-            price=int(record['price'])
-        )
-        db.session.add(sale)
-
-    for record in filtered_b:
-        sale = SalesData(
-            task_id=task_id,
-            source='B',
-            company=record['company'],
-            car_model=record['car_model'],
-            date_of_sale=record['date_of_sale'],
-            price=int(record['price'])
-        )
-        db.session.add(sale)
-
-    task.status = 'completed'
-    task.updated_at = datetime.utcnow()
-    db.session.commit()
-
-def load_json_data(file_path):
-    # Ensure that the path is correct and accessible
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of database operations."""
+    session = db.session() 
     try:
-        with open(file_path, 'r') as file:
-            return json.load(file)
-    except Exception as e:
-        print(f"Error reading JSON file at {file_path}: {e}")
-        return []
+        yield session  
+        session.commit() 
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close() 
 
-def load_csv_data(file_path, filters):
+def fetch_data_from_sources(start_year, end_year, companies):
+    data_folder = os.path.join(os.path.dirname(__file__), '..', 'data')
+
+    # Read data from Source A (JSON)
+    source_a_path = os.path.join(data_folder, 'sales_data.json')
+    with open(source_a_path, 'r') as f:
+        source_a_data = json.load(f)
+
+    # Read data from Source B (CSV)
+    source_b_path = os.path.join(data_folder, 'sales_data.csv')
+    source_b_data = pd.read_csv(source_b_path)
+
+    # Combine and filter the data
+    combined_data = source_a_data + source_b_data.to_dict(orient='records')
+    print("Combined Data:", combined_data)  # Debugging line to see what data is being combined
+
+    # Filter the data based on the provided arguments
     filtered_data = []
-    try:
-        with open(file_path, 'r') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                if apply_filters(row, filters, 'B'):
-                    filtered_data.append(row)
-    except Exception as e:
-        print(f"Error reading CSV file at {file_path}: {e}")
+    for record in combined_data:
+        # Extract the year from the date_of_sale (first 4 characters are the year)
+        year = int(record['date_of_sale'].split('-')[0])
+        
+        # Check if the year is within the specified range
+        if start_year <= year <= end_year:
+            # Check if the company is in the list of selected companies
+            if any(company.strip() in record['company'] for company in companies.split(',')):
+                filtered_data.append(record)
+
+    print("Filtered Data:", filtered_data)  # Debugging line to check if filtering is correct
+
     return filtered_data
 
-def apply_filters(record, filters, source):
-    # Basic filtering based on 'date_of_sale' and 'company'
-    start_date = filters.get('start_date')
-    end_date = filters.get('end_date')
-    allowed_companies = filters.get('companies')  # List of allowed companies like ['Honda', 'Toyota']
 
-    record_date = record.get('date_of_sale')
-    record_company = record.get('company')
+def process_task( task_id):
+    task = Task.query.get(task_id)
+    task.status = 'in progress'
+    db.session.commit()
+    
+    # Simulate fetching data from external sources and processing it
+    data = fetch_data_from_sources(task.start_year, task.end_year, task.companies)
+    
+    if not data:
+        print(f"No data to process for task {task_id}.") 
+    # Simulate another delay for processing
+    time.sleep(5)
+    
+    # Store data into the database (SalesData model)
+    for record in data:
+        print(f"Adding record to SalesData: {record}")  
+        sales_data = SalesData(
+            task_id=task.id,
+            company=record.get('company'),
+            car_model=record.get('car_model'),
+            date_of_sale=record.get('date_of_sale'),
+            price=record.get('price')
+        )
+        db.session.add(sales_data)
+    
+    task.status = 'completed'
+    db.session.commit()
 
-    # Date filtering
-    if start_date and record_date < start_date:
-        return False
-    if end_date and record_date > end_date:
-        return False
 
-    # Company filtering (optional for source A, mandatory for B if provided)
-    if allowed_companies and record_company not in allowed_companies:
-        return False
+def add_task_to_queue(task_id):
+    job_queue.put(task_id)
+    task_thread = Thread(target=process_task, args=(task_id,))
+    task_thread.start()
 
-    return True

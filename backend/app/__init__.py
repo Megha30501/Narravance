@@ -11,7 +11,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Enable Cross-Origin Resource Sharing (CORS)
+    # Enable CORS for specific frontend URL
     CORS(app, resources={r"/api/*": {"origins": "http://localhost:5147"}})
 
     # Initialize the database
@@ -24,16 +24,16 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    # Create and start a background thread for task processing
+    # Function to start processing a task in the background
     def start_processing_task():
         with app.app_context():  # Ensuring the app context is available in the thread
-            # Fetch the task from the database
-            task = Task.query.filter(Task.status == 'pending').first()  # Or modify to get a specific task
+            # Fetch the first pending task from the database
+            task = Task.query.filter(Task.status == 'pending').first()  # Modify as needed for more specific filtering
             if task:
                 filters = task.filters  # Assuming task has a 'filters' attribute or method
-                process_task(app, filters)  # Call process_task with the app context and filters
+                process_task(task.id)  # Pass task ID or use filters as needed for processing
 
-    # Start the background thread as a daemon thread
+    # Start the background thread to process tasks
     thread = threading.Thread(target=start_processing_task, daemon=True)
     thread.start()
 
